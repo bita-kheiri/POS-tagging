@@ -1,0 +1,197 @@
+---
+title: "udpipe_project"
+output: html_document
+date: "2026-09-15"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+```{r}
+library(udpipe)
+library(dplyr)
+library(ggplot2)
+```
+```{r}
+path_ewt_test   <- "en_ewt-ud-test.conllu"
+path_tweet_test <- "en-ud-tweet-test.conllu"
+```
+
+```{r}
+model_info <- udpipe_download_model(language = "english-ewt")
+ud_model   <- udpipe_load_model(file = model_info$file_model)
+```
+```{r}
+gold_ewt   <- udpipe_read_conllu(path_ewt_test)
+gold_tweet <- udpipe_read_conllu(path_tweet_test)
+```
+
+```{r}
+getwd()
+list.files()
+```
+```{r}
+gold_ewt   <- gold_ewt   %>% filter(!is.na(upos) & upos != "_")
+gold_tweet <- gold_tweet %>% filter(!is.na(upos) & upos != "_")
+```
+
+```{r}
+build_vertical <- function(df) {
+  sent_key <- paste(df$doc_id, df$paragraph_id, df$sentence_id, sep = "||")
+  sent_key <- factor(sent_key, levels = unique(sent_key))
+  toks_by_sentence <- split(df$token, sent_key)
+  sentences <- vapply(toks_by_sentence, paste, collapse = "\n", FUN.VALUE = character(1))
+  paste(sentences, collapse = "\n\n")
+}
+```
+```{r}
+vertical_ewt   <- build_vertical(gold_ewt)
+vertical_tweet <- build_vertical(gold_tweet)
+```
+```{r}
+ann_ewt   <- udpipe_annotate(ud_model, x = vertical_ewt,   tokenizer = "vertical", doc_id = "ewt_test")
+ann_tweet <- udpipe_annotate(ud_model, x = vertical_tweet, tokenizer = "vertical", doc_id = "tweet_test")
+
+ann_ewt   <- as.data.frame(ann_ewt)
+ann_tweet <- as.data.frame(ann_tweet)
+```
+```{r}
+cat("EWT gold tokens:", nrow(gold_ewt), " | EWT predicted tokens:", nrow(ann_ewt), "\n")
+cat("Tweet gold tokens:", nrow(gold_tweet), " | Tweet predicted tokens:", nrow(ann_tweet), "\n")
+```
+```{r}
+compare_ewt <- data.frame(
+  sentence  = gold_ewt$sentence,
+  token     = gold_ewt$token,
+  gold_upos = gold_ewt$upos,
+  pred_upos = ann_ewt$upos,
+  stringsAsFactors = FALSE
+)
+
+compare_tweet <- data.frame(
+  sentence  = gold_tweet$sentence,
+  token     = gold_tweet$token,
+  gold_upos = gold_tweet$upos,
+  pred_upos = ann_tweet$upos,
+  stringsAsFactors = FALSE
+)
+```
+```{r}
+upos_tags <- c("ADJ","ADP","ADV","AUX","CCONJ","DET","INTJ","NOUN","NUM",
+               "PART","PRON","PROPN","PUNCT","SCONJ","SYM","VERB","X")
+
+compute_metrics <- function(gold, pred, levels = upos_tags) {
+  gold <- factor(gold, levels = levels)
+  pred <- factor(pred, levels = levels)
+  cm <- table(Predicted = pred, Actual = gold)
+
+  per_tag <- data.frame(tag = levels, precision = NA_real_, recall = NA_real_, f1 = NA_real_)
+  for (i in seq_along(levels)) {
+    tag <- levels[i]
+    tp <- cm[tag, tag]
+    fp <- sum(cm[tag, ]) - tp
+    fn <- sum(cm[, tag]) - tp
+    precision <- if ((tp + fp) == 0) NA else tp / (tp + fp)
+    recall    <- if ((tp + fn) == 0) NA else tp / (tp + fn)
+    f1        <- if (is.na(precision) || is.na(recall) || (precision + recall) == 0) NA else
+                 2 * precision * recall / (precision + recall)
+    per_tag$precision[i] <- precision
+    per_tag$recall[i]    <- recall
+    per_tag$f1[i]        <- f1
+  }
+
+  list(
+    accuracy = mean(as.character(gold) == as.character(pred)),
+    confusion_matrix = cm,
+    per_tag = per_tag
+  )
+}
+
+results_ewt   <- compute_metrics(compare_ewt$gold_upos,   compare_ewt$pred_upos)
+results_tweet <- compute_metrics(compare_tweet$gold_upos, compare_tweet$pred_upos)
+
+cat("Overall accuracy on FORMAL text (EWT):    ", round(results_ewt$accuracy * 100, 2), "%\n")
+cat("Overall accuracy on INFORMAL text (Tweet):", round(results_tweet$accuracy * 100, 2), "%\n")
+```
+```{r}
+write.csv(results_ewt$per_tag,   "per_tag_results_EWT.csv",   row.names = FALSE)
+write.csv(results_tweet$per_tag, "per_tag_results_Tweet.csv", row.names = FALSE)
+write.csv(as.data.frame.matrix(results_ewt$confusion_matrix),   "confusion_matrix_EWT.csv")
+write.csv(as.data.frame.matrix(results_tweet$confusion_matrix), "confusion_matrix_Tweet.csv")
+```
+
+```{r}
+chart_data <- bind_rows(
+  results_ewt$per_tag   %>% mutate(domain = "Formal (EWT)"),
+  results_tweet$per_tag %>% mutate(domain = "Informal (Tweet)")
+)
+
+ggplot(chart_data, aes(x = tag, y = f1, fill = domain)) +
+  geom_col(position = "dodge") +
+  labs(title = "POS Tagging F1 Score by Tag: Formal vs. Informal Text",
+       x = "POS Tag", y = "F1 Score") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("pos_f1_comparison.png", width = 10, height = 6, dpi = 300)
+```
+```{r}
+set.seed(42)
+errors_tweet <- compare_tweet %>% filter(gold_upos != pred_upos)
+sample_errors <- errors_tweet %>% sample_n(min(30, nrow(errors_tweet)))
+write.csv(sample_errors, "tweet_error_sample_for_manual_review.csv", row.names = FALSE)
+```
+
+```{r}
+packageVersion("udpipe")
+```
+```{r}
+packageVersion("dplyr")
+packageVersion("ggplot2")
+```
+
+```{r}
+sessionInfo()
+```
+```{r}
+library(udpipe)
+library(dplyr)
+library(ggplot2)
+```
+```{r}
+drop_data <- results_ewt$per_tag %>%
+  select(tag, f1_ewt = f1) %>%
+  left_join(results_tweet$per_tag %>% select(tag, f1_tweet = f1), by = "tag") %>%
+  mutate(f1_drop = f1_ewt - f1_tweet) %>%
+  arrange(desc(f1_drop))
+
+ggplot(drop_data, aes(x = reorder(tag, -f1_drop), y = f1_drop)) +
+  geom_col(fill = "firebrick") +
+  labs(title = "F1 Score Drop per POS Tag (Formal to Informal Text)",
+       x = "POS Tag", y = "F1 Drop (EWT minus Tweet)") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("pos_f1_drop_per_tag.png", width = 10, height = 6, dpi = 300)
+```
+```{r}
+error_categories <- data.frame(
+  category = c("Twitter-specific artifacts\n(mentions, URLs, hashtags, RT)",
+               "Non-standard capitalization",
+               "Non-standard spelling/shorthand",
+               "Lexical ambiguity/slang",
+               "Other"),
+  count = c(18, 4, 3, 3, 2)
+)
+
+ggplot(error_categories, aes(x = reorder(category, -count), y = count, fill = category)) +
+  geom_col(show.legend = FALSE) +
+  labs(title = "Categorization of POS Tagging Errors on Tweets (n = 30 sample)",
+       x = NULL, y = "Number of Errors") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 20, hjust = 1))
+
+ggsave("error_category_breakdown.png", width = 8, height = 6, dpi = 300)
+```
+
+

@@ -1,0 +1,31 @@
+sentence,token,gold_upos,pred_upos,likely_cause
+How TO Get Over Your Ex Fast - URL1395 URL1513,Fast,ADV,PROPN,Title-case capitalization (headline style) misread as proper noun
+"RT @USER64: I hate when ppl says ""nak tanya ni"" but suddenly ""em tade pape la"" . Lol I'm freaking curious abt what they want to ask me.",RT,X,NOUN,"Twitter-specific retweet marker, not a real word"
+ayerene-@USER1654 -babe -zayn -spongeboobs -pretty af -ia bc school ily😽,pretty,ADJ,ADV,"Fragmented list-style text (not a full sentence), ambiguous role"
+RT @USER326: Gucci Mane is going on tour after being released from prison in September URL791,URL791,X,PROPN,URL placeholder token misread as a name
+RT @USER2406: Leigh Anne Pinnock URL1494,RT,X,PROPN,Twitter-specific retweet marker
+reading harry potter in bed! waiting for the new south park to come on,potter,PROPN,NOUN,"Missing capitalization on proper noun (""Harry Potter"")"
+RT @USER934: @USER2609 @USER1361 it's very strange how they are bending over backwards to get rid of Jeremy Corbyn . He is a decent…,@USER934,X,NOUN,Twitter mention placeholder
+@USER114 no but really bo1 tournaments would get so many teams it would be so much fun,@USER114,PROPN,ADP,Non-standard token shape (@mention)
+It's raining!! ,,SYM,NOUN,"Emoji/symbol lost in encoding, empty token"
+"RT @USER1781: Me: *is dead* Louis and Harry: plays rock paper scissors , Harry touches Louis' hand Me: URL721",URL721,X,NUM,URL placeholder with digits misread as a number
+@USER1455 So you want my number....That's romantic AF!!! hahahha....You should be polite AF when asking things like that!!! hahahha,@USER1455,PROPN,NUM,Mention placeholder with digits misread as a number
+"Huawei P9 Release Date, Price and Specs - CNET: Huawei's new P9 -- and its big brother, the P9 Plus -- have tw... URL386",Plus,NOUN,CCONJ,"Lexical ambiguity: ""Plus"" as product name vs. conjunction"
+"Nine killed, eight missing in landslide in Arunachal Pradesh URL926 #TopNews #India",#India,X,PROPN,Hashtag containing a real proper noun
+@USER1706 cmon now. That's bro,bro,NOUN,PROPN,Informal slang address term
+"RT @USER896: Chris Brown started the trend of freestyle dancing to ""young thug/future/rich homie quan"" songs during his concerts. I see…",@USER896,X,NOUN,Twitter mention placeholder
+RT @USER1723: Buy Brand Viagra 100mg. Order Viagra at URL1618 Online Pharmacy!,RT,X,NOUN,Twitter-specific retweet marker
+RT @USER1929: Philosophy - Cambridge University | Psychology & Social... URL1164 #psychologysocialscience,Philosophy,NOUN,PROPN,Title-case capitalization (headline style)
+RT @USER1272: A lot of R3 orphans and widows are afflicted by Stockholm Syndrome and are craving for attention of PTs in Twitter,@USER1272,X,NOUN,Twitter mention placeholder
+RT @USER733: My KC Scout Traffic Alert Cleared: Roadwork on I-470 WB (East/West) PAST DOUGLAS ST Message #8252-14783,I-470,NUM,PROPN,Alphanumeric identifier (highway number)
+"Deputy pulls over FL man, naked teen in backseat... URL201 #fl #florida #oops #dumb #sex #dui #traffic #news #police",#sex,X,NOUN,Hashtag containing a real word
+RT @USER951: Just seen one of my favorite people @USER1297  ... I love her I swear. Muah!**awwyyy! Me heart yu 4x more loveeee!,4x,ADV,NUM,"Informal numeric shorthand (""4 times"")"
+"RT @USER1637: You are my definition of the word ""love."" Thank you.. thank you, @USER2199. I am so proud of you.. always ❤ URL895…",@USER1637,X,NOUN,Twitter mention placeholder
+Happy Guys Finish Last - EmpowHER.com URL156 vía @USER1854,vía,ADP,X,Foreign/accented spelling variant
+"@USER803 ""If it's with you then I don't mind-""",@USER803,PROPN,NOUN,Twitter mention placeholder
+#porn #porn Swipe Hookup - meet sexy ladies for SEX DATING - visit: URL553 URL697,URL553,X,NUM,URL placeholder with digits
+The latest The Claudio Russo Daily! URL970 Thanks to @USER365 @USER2218 #brexit #technology,#technology,X,NOUN,Hashtag containing a real word
+"#PrayForHayes @USER972 Everything will be okay, i'm sure💕",@USER972,PROPN,NUM,Mention placeholder with digits
+"Treat me like a queen, buy me CERTAIN things, just show me how life pose to be😏👌🏾",CERTAIN,ADJ,PROPN,"All-caps used for emphasis, misread as acronym/proper noun"
+RT @USER480: I got a new one for you guys URL719,URL719,X,PROPN,URL placeholder token
+Cant wait.🙈💃 Temme your gang is winning right?😥 Haina?😋 URL631,Cant,AUX,ADJ,"Missing apostrophe in contraction (""Can't"")"
